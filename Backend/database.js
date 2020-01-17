@@ -19,7 +19,7 @@ sequelize
         console.error('Unable to connect to the database:', err);
     });
 
-const User = sequelize.define('user', {
+const User = sequelize.define('users', {
     id: { type: Sequelize.INTEGER, allowNull: false, unique: true, primaryKey: true, autoIncrement: true },
     name: { type: Sequelize.STRING, allowNull: false },
     surname: { type: Sequelize.STRING, allowNull: false },
