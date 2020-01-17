@@ -13,26 +13,31 @@ exports.registration = (req, res) => {
         surname: req.body.surname,
         topics: topics
     };
-    data.code = bcrypt.genSaltSync(saltRounds);
 
-    QRCode.toDataURL(data.code, (err, url) => {
-        if (err) throw err;
+    bcrypt.genSalt(saltRounds, (err, salt) => {
+       bcrypt.hash(data.email, salt, (err, hash) => {
+           data.code = hash;
 
-        bcrypt.genSalt(saltRounds, (err, salt) => {
-            bcrypt.hash(data.password, salt, (err, hash) => {
-                data.password = hash;
-                data.qr = url;
-                User
-                    .findOrCreate({ where: { email: email }, defaults: data })
-                    .spread((user, created) => {
-                        if (created) {
-                            res.send(user.get({ plain: true }))
-                        } else {
-                            res.send({ isExists: true })
-                        }
-                    });
-            });
-        });
+           QRCode.toDataURL(data.code, (err, url) => {
+               if (err) throw err;
+
+               bcrypt.genSalt(saltRounds, (err, salt) => {
+                   bcrypt.hash(data.password, salt, (err, hash) => {
+                       data.password = hash;
+                       data.qr = url;
+                       User
+                           .findOrCreate({ where: { email: email }, defaults: data })
+                           .spread((user, created) => {
+                               if (created) {
+                                   res.send(user.get({ plain: true }))
+                               } else {
+                                   res.send({ isExists: true })
+                               }
+                           });
+                   });
+               });
+           });
+       });
     });
 };
 
