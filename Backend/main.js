@@ -23,8 +23,8 @@ const startServer = (port) => {
 
     configureEndpoints(app);
 
-    const privateKey  = fs.readFileSync(__dirname + '/server.key', 'utf8');
-    const certificate = fs.readFileSync(__dirname + '/server.cert', 'utf8');
+    const privateKey  = fs.readFileSync(__dirname + '/../selfsigned.key', 'utf8');
+    const certificate = fs.readFileSync(__dirname + '/../selfsigned.crt', 'utf8');
     const credentials = { key: privateKey, cert: certificate };
 
     const httpsServer = https.createServer(credentials, app);
