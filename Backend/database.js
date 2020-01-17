@@ -34,7 +34,7 @@ const User = sequelize.define('users', {
     topics: { type: Sequelize.TEXT, allowNull: true, get() { return this.getDataValue('topics') ? this.getDataValue('topics').split(';') : null }, set(value) { value.length > 0 ? this.setDataValue('topics', value.join(';')) : null },  },
     contacts: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: true },
     communication: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: true },
-    qr: { type: Sequelize.TEXT, allowNull: false, unique: true },
+    qr: { type: Sequelize.TEXT, allowNull: false },
     code: { type: Sequelize.STRING, allowNull: false },
     avatar: { type: Sequelize.TEXT, allowNull: true }
 }, {
