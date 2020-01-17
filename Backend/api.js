@@ -15,29 +15,25 @@ exports.registration = (req, res) => {
     };
 
     bcrypt.genSalt(saltRounds, (err, salt) => {
-       bcrypt.hash(data.email, salt, (err, hash) => {
-           data.code = hash;
-
-           QRCode.toDataURL(data.code, (err, url) => {
-               if (err) throw err;
-
-               bcrypt.genSalt(saltRounds, (err, salt) => {
-                   bcrypt.hash(data.password, salt, (err, hash) => {
-                       data.password = hash;
-                       data.qr = url;
-                       User
-                           .findOrCreate({ where: { email: email }, defaults: data })
-                           .spread((user, created) => {
-                               if (created) {
-                                   res.send(user.get({ plain: true }))
-                               } else {
-                                   res.send({ isExists: true })
-                               }
-                           });
-                   });
-               });
-           });
-       });
+        bcrypt.hash(email, salt, (err, code) => {
+            data.code = code;
+            QRCode.toDataURL(data.code, (err, url) => {
+                if (err) throw err;
+                bcrypt.hash(data.password, salt, (err, password) => {
+                    data.password = password;
+                    data.qr = url;
+                    User
+                        .findOrCreate({ where: { email: email }, defaults: data })
+                        .spread((user, created) => {
+                            if (created) {
+                                res.send(user.get({ plain: true }))
+                            } else {
+                                res.send({ isExists: true })
+                            }
+                        });
+                });
+            });
+        });
     });
 };
 
@@ -58,5 +54,15 @@ exports.login = (req, res) => {
             } else {
                 res.send({ notFound: true });
             }
+        })
+};
+
+exports.findQrCode = (req, res) => {
+    const hash = req.body.hash;
+
+    User
+        .findOne({ where: { code: hash }, attributes: ['code'] })
+        .then((user) => {
+            res.send(user);
         })
 };
