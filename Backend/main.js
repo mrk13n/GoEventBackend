@@ -1,7 +1,9 @@
 const express = require('express');
+const https = require('https');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const fs = require('fs');
 const api = require('./api');
 
 const configureEndpoints = (app) => {
@@ -21,7 +23,13 @@ const startServer = (port) => {
 
     configureEndpoints(app);
 
-    app.listen(port, () => {
+    const privateKey  = fs.readFileSync(__dirname + '/server.key', 'utf8');
+    const certificate = fs.readFileSync(__dirname + '/server.cert', 'utf8');
+    const credentials = { key: privateKey, cert: certificate };
+
+    const httpsServer = https.createServer(credentials, app);
+
+    httpsServer.listen(port, () => {
         console.log('My Application Running on http://localhost:'+port+'/');
     });
 };
