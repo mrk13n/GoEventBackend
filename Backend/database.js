@@ -26,8 +26,6 @@ sequelize
 
         User.belongsToMany(User, { through: Followers, as: 'myFollowers', foreignKey: 'userId' });
         User.belongsToMany(User, { through: Followers, as: 'follower', foreignKey: 'followerId' });
-        Followers.belongsTo(Followers, { through: Followers, as: 'myFollowers', foreignKey: 'userId' });
-        Followers.belongsTo(Followers, { through: Followers, as: 'follower', foreignKey: 'followerId' });
         User.belongsToMany(Categories, { through: Interests, as: 'categories', foreignKey: 'userId' });
         Categories.belongsToMany(User, { through: Interests, as: 'users', foreignKey: 'categoryId' });
         Interests.belongsTo(Interests, { through: Interests, as: 'categories', foreignKey: 'userId' });
