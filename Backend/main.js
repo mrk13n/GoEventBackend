@@ -7,6 +7,9 @@ const api = require('./api');
 const configureEndpoints = (app) => {
     app.post('/api/registration/', api.registration);
     app.post('/api/login/', api.login);
+    app.post('/api/follow/', api.follow);
+    app.get('/api/find/', api.authenticateToken, api.findUser);
+    // app.post('/api/delete/', api.delete);
 };
 
 const startServer = (port) => {

@@ -1,4 +1,5 @@
 const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 
 const sequelize = new Sequelize('4_dev_kit_ru_db', '4_dev_kit_ru_usr', 'yh29TtE5oZYqdqCX', {
     host: 'localhost',
@@ -14,13 +15,22 @@ sequelize
     .authenticate()
     .then(() => {
         console.log('Connection has been established successfully.');
+        User.sync({force: false})
+            .then(() => {
+                Followers.sync({force: false});
+            });
+
+        User.belongsToMany(User, { through: Followers, as: 'User', foreignKey: 'userId' });
+        User.belongsToMany(User, { through: Followers, as: 'Follower', foreignKey: 'followerId' });
+        Followers.belongsTo(Followers, { through: Followers, as: 'User', foreignKey: 'userId' });
+        Followers.belongsTo(Followers, { through: Followers, as: 'Follower', foreignKey: 'followerId' });
     })
     .catch(err => {
         console.error('Unable to connect to the database:', err);
     });
 
 const User = sequelize.define('users', {
-    id: { type: Sequelize.INTEGER, allowNull: false, unique: true, primaryKey: true, autoIncrement: true },
+    id: { type: Sequelize.STRING, allowNull: false, unique: true, primaryKey: true },
     name: { type: Sequelize.STRING, allowNull: false },
     surname: { type: Sequelize.STRING, allowNull: false },
     email: { type: Sequelize.STRING, allowNull: false, unique: true },
@@ -30,17 +40,25 @@ const User = sequelize.define('users', {
     phone: { type: Sequelize.INTEGER, allowNull: true, unique: true },
     can: { type: Sequelize.STRING(1000), allowNull: true },
     look: { type: Sequelize.STRING(1000), allowNull: true },
-    friends: { type: Sequelize.TEXT, allowNull: true, get() { return this.getDataValue('friends') ? this.getDataValue('friends').split(';') : null }, set(value) { value.length > 0 ? this.setDataValue('friends', value.join(';')) : null } },
     topics: { type: Sequelize.TEXT, allowNull: true, get() { return this.getDataValue('topics') ? this.getDataValue('topics').split(';') : null }, set(value) { value.length > 0 ? this.setDataValue('topics', value.join(';')) : null },  },
     contacts: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: true },
     communication: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: true },
     qr: { type: Sequelize.TEXT, allowNull: false },
-    code: { type: Sequelize.STRING, allowNull: false },
     avatar: { type: Sequelize.TEXT, allowNull: true }
 }, {
     freezeTableName: true,
 });
 
-User.sync({force: false});
+const Followers = sequelize.define('followers', {
+    id: { type: Sequelize.INTEGER, allowNull: false, unique: true, primaryKey: true, autoIncrement: true },
+    userId: { type: Sequelize.STRING, allowNull: false },
+    followerId: { type: Sequelize.STRING, allowNull: false }
+}, {
+    createdAt: false,
+    updatedAt: false,
+    freezeTableName: true
+});
 
+exports.Op = Op;
 exports.User = User;
+exports.Followers = Followers;
