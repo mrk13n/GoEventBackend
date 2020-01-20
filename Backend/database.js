@@ -17,7 +17,6 @@ sequelize
         console.log('Connection has been established successfully.');
         User.sync({force: false})
             .then(() => {
-                Followers.sync({force: false});
                 Categories.sync({force: false});
                 Interests.sync({force: false});
             });

@@ -7,6 +7,8 @@ const secret = '044f034ddeb087766de732c592d49b699d41249395f3b155070f866572857a8c
 const Op = db.Op;
 const User = db.User;
 const Followers = db.Followers;
+const Categories = db.Categories;
+const Interests = db.Interests;
 
 exports.authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
@@ -20,19 +22,31 @@ exports.authenticateToken = (req, res, next) => {
     });
 };
 
+exports.categories = (req, res) => {
+    Categories.findAll()
+        .then(categories => {
+            res.status(200).send(categories);
+        });
+};
+
 exports.registration = (req, res) => {
-    const topics = req.body.topics ? req.body.topics : [];
+    const topics = req.body.topics;
+    let interests = [];
     const email = req.body.email;
     const data = {
         password: req.body.password,
         name: req.body.name,
         surname: req.body.surname,
-        topics: topics
     };
 
     bcrypt.genSalt(saltRounds, (err, salt) => {
         bcrypt.hash(email, salt, (err, code) => {
             data.id = code;
+            if (topics) {
+                topics.forEach(item => {
+                    interests.push({ userId: data.id, categoryId: item });
+                });
+            }
             QRCode.toDataURL(data.id, (err, url) => {
                 if (err) throw err;
                 bcrypt.hash(data.password, salt, (err, password) => {
@@ -43,6 +57,12 @@ exports.registration = (req, res) => {
                         .then(([user, created]) => {
                             if (created) {
                                 const token = jwt.sign(user.get({ plain: true }).id, secret);
+                                if (interests.length > 0) {
+                                    Interests.bulkCreate(interests)
+                                        .then(() => {
+                                            res.status(201).send({ auth: token });
+                                        });
+                                }
                                 res.status(201).send({ auth: token });
                             } else {
                                 res.send({ isExists: true })
@@ -91,8 +111,8 @@ exports.follow = (req, res) => {
     const follower = req.body.follower;
 
     User.findAll({ where: { [Op.or]: [{ id: id }, { id: follower }] } })
-        .then((user) => {
-            if (user.length === 2) {
+        .then(users => {
+            if (users.length === 2) {
                 Followers.findOrCreate({ where: { userId: id, friendId: follower }})
                     .then(([user, created]) => {
                         if (created) {
@@ -102,7 +122,6 @@ exports.follow = (req, res) => {
                         }
                     })
             } else {
-                //Only 2 users must be
                 res.status(404).send({ error: 'Only 2 users must be in request!' });
             }
         });
