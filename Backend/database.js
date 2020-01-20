@@ -18,7 +18,8 @@ sequelize
         User.sync({force: false})
             .then(() => {
                 Followers.sync({force: false});
-                Categories.sync({force: true});
+                Categories.sync({force: false});
+                Interests.sync({force: false});
             });
 
         User.belongsToMany(User, { through: Followers, as: 'User', foreignKey: 'userId' });
