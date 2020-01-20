@@ -28,8 +28,6 @@ sequelize
         User.belongsToMany(User, { through: Followers, as: 'follower', foreignKey: 'followerId' });
         User.belongsToMany(Categories, { through: Interests, as: 'categories', foreignKey: 'userId' });
         Categories.belongsToMany(User, { through: Interests, as: 'users', foreignKey: 'categoryId' });
-        Interests.belongsTo(Interests, { through: Interests, as: 'categories', foreignKey: 'userId' });
-        Interests.belongsTo(Interests, { through: Interests, as: 'users', foreignKey: 'categoryId' });
     })
     .catch(err => {
         console.error('Unable to connect to the database:', err);
