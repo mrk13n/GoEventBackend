@@ -18,12 +18,17 @@ sequelize
         User.sync({force: false})
             .then(() => {
                 Followers.sync({force: false});
+                Categories.sync({force: true});
             });
 
         User.belongsToMany(User, { through: Followers, as: 'User', foreignKey: 'userId' });
         User.belongsToMany(User, { through: Followers, as: 'Follower', foreignKey: 'followerId' });
         Followers.belongsTo(Followers, { through: Followers, as: 'User', foreignKey: 'userId' });
         Followers.belongsTo(Followers, { through: Followers, as: 'Follower', foreignKey: 'followerId' });
+        User.belongsToMany(Categories, { through: Interests, as: 'User', foreignKey: 'userId' });
+        Categories.belongsToMany(User, { through: Interests, as: 'Categories', foreignKey: 'categoryId' });
+        Interests.belongsTo(Interests, { through: Interests, as: 'User', foreignKey: 'userId' });
+        Interests.belongsTo(Interests, { through: Interests, as: 'Categories', foreignKey: 'categoryId' });
     })
     .catch(err => {
         console.error('Unable to connect to the database:', err);
@@ -59,6 +64,27 @@ const Followers = sequelize.define('followers', {
     freezeTableName: true
 });
 
+const Categories = sequelize.define('categories', {
+    id: { type: Sequelize.STRING, allowNull: false, unique: true, primaryKey: true },
+    name: { type: Sequelize.STRING, allowNull: false }
+}, {
+    createdAt: false,
+    updatedAt: false,
+    freezeTableName: true
+});
+
+const Interests = sequelize.define('interests', {
+    id: { type: Sequelize.INTEGER, allowNull: false, unique: true, primaryKey: true, autoIncrement: true },
+    userId: { type: Sequelize.STRING, allowNull: false },
+    categoryId: { type: Sequelize.STRING, allowNull: false }
+}, {
+    createdAt: false,
+    updatedAt: false,
+    freezeTableName: true
+});
+
 exports.Op = Op;
 exports.User = User;
 exports.Followers = Followers;
+exports.Categories = Categories;
+exports.Interests = Interests;
