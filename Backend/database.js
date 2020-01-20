@@ -25,9 +25,9 @@ sequelize
         User.belongsToMany(User, { through: Followers, as: 'Follower', foreignKey: 'followerId' });
         Followers.belongsTo(Followers, { through: Followers, as: 'User', foreignKey: 'userId' });
         Followers.belongsTo(Followers, { through: Followers, as: 'Follower', foreignKey: 'followerId' });
-        User.belongsToMany(Categories, { through: Interests, as: 'User', foreignKey: 'userId' });
+        User.belongsToMany(Categories, { through: Interests, as: 'Users', foreignKey: 'userId' });
         Categories.belongsToMany(User, { through: Interests, as: 'Categories', foreignKey: 'categoryId' });
-        Interests.belongsTo(Interests, { through: Interests, as: 'User', foreignKey: 'userId' });
+        Interests.belongsTo(Interests, { through: Interests, as: 'Users', foreignKey: 'userId' });
         Interests.belongsTo(Interests, { through: Interests, as: 'Categories', foreignKey: 'categoryId' });
     })
     .catch(err => {
