@@ -62,8 +62,9 @@ exports.registration = (req, res) => {
                                         .then(() => {
                                             return res.status(201).send({ auth: token });
                                         });
+                                } else {
+                                    return res.status(201).send({ auth: token });
                                 }
-                                return res.status(201).send({ auth: token });
                             } else {
                                 return res.status(409).send({ error: 'User with this email exists!' });
                             }
@@ -96,7 +97,7 @@ exports.login = (req, res) => {
 };
 
 exports.findUser = (req, res) => {
-    User.findOne({ where: { id: req.user }, include: [{ model: User, as: 'myFollowers' }, { model: Categories, as: 'user' }] })
+    User.findOne({ where: { id: req.user }, include: [{ model: User, as: 'myFollowers' }, { model: Categories, as: 'categories' }] })
         .then((user) => {
             if (user) {
                 return res.send(user.get({ plain: true }));
