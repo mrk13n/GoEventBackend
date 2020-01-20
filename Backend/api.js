@@ -25,7 +25,7 @@ exports.authenticateToken = (req, res, next) => {
 exports.categories = (req, res) => {
     Categories.findAll()
         .then(categories => {
-            res.status(200).send(categories);
+            return res.status(200).send(categories);
         });
 };
 
@@ -60,12 +60,12 @@ exports.registration = (req, res) => {
                                 if (interests.length > 0) {
                                     Interests.bulkCreate(interests)
                                         .then(() => {
-                                            res.status(201).send({ auth: token });
+                                            return res.status(201).send({ auth: token });
                                         });
                                 }
-                                res.status(201).send({ auth: token });
+                                return res.status(201).send({ auth: token });
                             } else {
-                                res.send({ isExists: true })
+                                return res.status(409).send({ error: 'User with this email exists!' });
                             }
                         });
                 });
@@ -85,44 +85,43 @@ exports.login = (req, res) => {
                 const checkPassword = await bcrypt.compare(password, user.password);
                 if (checkPassword) {
                     const token = jwt.sign(user.get({ plain: true }).id, secret);
-                    res.status(200).send({ auth: token });
+                    return res.status(200).send({ auth: token });
                 } else {
-                    res.status(401).send({ error: 'Incorrect Password!' });
+                    return res.status(401).send({ error: 'Incorrect Password!' });
                 }
             } else {
-                res.status(404).send({ error: 'Not Found!' });
+                return res.status(404).send({ error: 'User Not Found!' });
             }
         })
 };
 
 exports.findUser = (req, res) => {
-    User.findOne({ where: { id: req.user } })
+    User.findOne({ where: { id: req.user }, include: [{ model: User, as: 'myFollowers' }, { model: Categories, as: 'user' }] })
         .then((user) => {
             if (user) {
-                res.send(user.get({ plain: true }));
+                return res.send(user.get({ plain: true }));
             } else {
-                res.status(404).send({ error: 'Not Found!' });
+                return res.status(404).send({ error: 'Not Found!' });
             }
         });
 };
 
 exports.follow = (req, res) => {
-    const id = req.body.id;
     const follower = req.body.follower;
 
-    User.findAll({ where: { [Op.or]: [{ id: id }, { id: follower }] } })
+    User.findAll({ where: { [Op.or]: [{ id: req.user }, { id: follower }] } })
         .then(users => {
             if (users.length === 2) {
-                Followers.findOrCreate({ where: { userId: id, friendId: follower }})
+                Followers.findOrCreate({ where: { userId: req.user, followerId: follower }})
                     .then(([user, created]) => {
                         if (created) {
-                            res.send(user.get({ plain: true }));
+                            return res.send(user.get({ plain: true }));
                         } else {
-                            res.status(409).send({ error: 'You are following this user!' });
+                            return res.status(409).send({ error: 'You are following this user!' });
                         }
                     })
             } else {
-                res.status(404).send({ error: 'Only 2 users must be in request!' });
+                return res.status(404).send({ error: 'Only 2 users must be in request!' });
             }
         });
 };

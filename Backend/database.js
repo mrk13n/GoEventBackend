@@ -17,18 +17,21 @@ sequelize
         console.log('Connection has been established successfully.');
         User.sync({force: false})
             .then(() => {
-                Categories.sync({force: false});
-                Interests.sync({force: false});
+                Followers.sync({force: false});
+                Categories.sync({force: false})
+                    .then(() => {
+                        Interests.sync({force: false});
+                    });
             });
 
-        User.belongsToMany(User, { through: Followers, as: 'User', foreignKey: 'userId' });
-        User.belongsToMany(User, { through: Followers, as: 'Follower', foreignKey: 'followerId' });
-        Followers.belongsTo(Followers, { through: Followers, as: 'User', foreignKey: 'userId' });
-        Followers.belongsTo(Followers, { through: Followers, as: 'Follower', foreignKey: 'followerId' });
-        User.belongsToMany(Categories, { through: Interests, as: 'Users', foreignKey: 'userId' });
-        Categories.belongsToMany(User, { through: Interests, as: 'Categories', foreignKey: 'categoryId' });
-        Interests.belongsTo(Interests, { through: Interests, as: 'Users', foreignKey: 'userId' });
-        Interests.belongsTo(Interests, { through: Interests, as: 'Categories', foreignKey: 'categoryId' });
+        User.belongsToMany(User, { through: Followers, as: 'myFollowers', foreignKey: 'userId' });
+        User.belongsToMany(User, { through: Followers, as: 'follower', foreignKey: 'followerId' });
+        Followers.belongsTo(Followers, { through: Followers, as: 'myFollowers', foreignKey: 'userId' });
+        Followers.belongsTo(Followers, { through: Followers, as: 'follower', foreignKey: 'followerId' });
+        User.belongsToMany(Categories, { through: Interests, as: 'categories', foreignKey: 'userId' });
+        Categories.belongsToMany(User, { through: Interests, as: 'users', foreignKey: 'categoryId' });
+        Interests.belongsTo(Interests, { through: Interests, as: 'categories', foreignKey: 'userId' });
+        Interests.belongsTo(Interests, { through: Interests, as: 'users', foreignKey: 'categoryId' });
     })
     .catch(err => {
         console.error('Unable to connect to the database:', err);

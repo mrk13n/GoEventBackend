@@ -7,8 +7,8 @@ const api = require('./api');
 const configureEndpoints = (app) => {
     app.post('/api/registration/', api.registration);
     app.post('/api/login/', api.login);
-    app.post('/api/follow/', api.follow);
-    app.get('/api/find/', api.authenticateToken, api.findUser);
+    app.post('/api/follow/', api.authenticateToken, api.follow);
+    app.get('/api/user/', api.authenticateToken, api.findUser);
     app.get('/api/categories/', api.categories);
     // app.post('/api/delete/', api.delete);
 };
