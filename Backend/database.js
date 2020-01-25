@@ -59,7 +59,6 @@ const User = sequelize.define('users', {
 });
 
 const Followers = sequelize.define('followers', {
-    id: { type: Sequelize.INTEGER, allowNull: false, unique: true, primaryKey: true, autoIncrement: true },
     userId: { type: Sequelize.STRING, allowNull: false },
     followerId: { type: Sequelize.STRING, allowNull: false }
 }, {
@@ -78,7 +77,6 @@ const Categories = sequelize.define('categories', {
 });
 
 const Interests = sequelize.define('interests', {
-    id: { type: Sequelize.INTEGER, allowNull: false, unique: true, primaryKey: true, autoIncrement: true },
     userId: { type: Sequelize.STRING, allowNull: false },
     categoryId: { type: Sequelize.STRING, allowNull: false }
 }, {
@@ -88,8 +86,7 @@ const Interests = sequelize.define('interests', {
 });
 
 const Passwords = sequelize.define('passwords', {
-    id: { type: Sequelize.INTEGER, allowNull: false, unique: true, primaryKey: true, autoIncrement: true },
-    userId: { type: Sequelize.STRING, allowNull: false },
+    userId: { type: Sequelize.STRING, allowNull: false, primaryKey: true, unique: true },
     password: { type: Sequelize.STRING, allowNull: true },
     googlePassword: { type: Sequelize.STRING, allowNull: true },
     facebookPassword: { type: Sequelize.STRING, allowNull: true },

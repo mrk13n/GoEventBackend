@@ -1,0 +1,15 @@
+{
+    "mysql": {
+        "database": "goeventdb",
+        "user": "goevent",
+        "password": "991325"
+    },
+    "server": {
+        "port": 3000
+    },
+    "app": {
+        "layouts": true,
+        "themes": true,
+        "languages": true
+    }
+}
