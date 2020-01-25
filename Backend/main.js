@@ -10,6 +10,10 @@ const configureEndpoints = (app) => {
     app.post('/api/follow/', api.authenticateToken, api.follow);
     app.get('/api/user/', api.authenticateToken, api.findUser);
     app.get('/api/categories/', api.categories);
+    app.post('/api/update/', api.authenticateToken, api.update);
+    app.post('/api/recovery/', api.recovery);
+    app.post('/api/uppass/', api.authenticateToken, api.updatePassword);
+    app.post('/api/social/', api.socialAuth);
     // app.post('/api/delete/', api.delete);
 };
 
